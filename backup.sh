@@ -10,4 +10,5 @@ pg_dump -F t -h localhost -U psp_kg_user -d txn_info > "$BACKUP_FILE"
 openssl enc -aes-256-cbc -salt -pbkdf2 -in "$BACKUP_FILE" -out "$ENCRYPTED_FILE" -k "$KEY"
 rm "$BACKUP_FILE"
 s3cmd put "$ENCRYPTED_FILE" "$BUCKET" 
-find "$BACKUP_DIR" -type f -name "*.tar.enc" -mtime +2 -exec rm {} \;
+ls -t | tail -n +3 | xargs -d '\n' rm --
+# find "$BACKUP_DIR" -type f -name "*.tar.enc" -mtime +2 -exec rm {} \;

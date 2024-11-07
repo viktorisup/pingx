@@ -1,0 +1,41 @@
+  GNU nano 6.2                                                                                              git-script.sh                                                                                                       
+REPO_URL="git@git.mycbl.ru:helm/documentations2.git"
+CLONE_DIR="/root/helm-docu2"
+FILE_TO_EDIT="values.yaml"
+COMMIT_MESSAGE="update tag2"
+BRANCH_NAME="master"
+
+#SSH_KEY_FILE=$(mktemp)
+#echo "$ssh_key_isup" > $SSH_KEY_FILE
+#chmod 600 $SSH_KEY_FILE
+SSH_KEY_FILE=/root/ssh/id_ed25519 
+ssh-keyscan git.mycbl.ru >> ~/.ssh/known_hosts 
+
+# Отключение проверки отпечатка ключа и указание конкретного SSH-ключа
+export GIT_SSH_COMMAND="ssh -i $SSH_KEY_FILE -o StrictHostKeyChecking=no"
+
+git config --global user.email "svc@example.com"
+git config --global user.name "script_user"
+
+# Клонирование репозитория
+git clone $REPO_URL $CLONE_DIR
+
+# Переход в директорию репозитория
+cd $CLONE_DIR
+
+# Внесение изменений в файл
+sed -i 's/imageTag: .*/imageTag: test1/' $FILE_TO_EDIT
+
+# Добавление изменений в индекс
+git add $FILE_TO_EDIT
+
+# Коммит изменений
+git commit -m "$COMMIT_MESSAGE"
+
+# Пуш изменений обратно в репозиторий
+git push origin $BRANCH_NAME
+
+# Очистка временной директории
+#rm -rf $CLONE_DIR
+
+echo "Изменения успешно запушены в репозиторий"
